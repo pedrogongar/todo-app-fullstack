@@ -1,53 +1,73 @@
-# CLAUDE.md
+# Frontend — CLAUDE.md
 
-Este archivo proporciona contexto a Claude Code para trabajar con este repositorio.
+Este archivo complementa el CLAUDE.md raíz con convenciones específicas del frontend.
 
-## Descripción del proyecto
+## Contexto
 
-Aplicación fullstack de gestión de tareas. Monorepo con dos directorios principales:
+Este es un proyecto de aprendizaje de fundamentos de Vue 3. El objetivo es que el desarrollador entienda cada concepto, no que el código se genere automáticamente.
 
-- **frontend/** — Vue 3 + TypeScript + TailwindCSS (Vite como bundler)
-- **backend/** — C# .NET 10 (ASP.NET Core Web API)
+## Rol de Claude Code en este proyecto
 
-## Convenciones generales
-
-- Idioma: español para nombres de variables, interfaces, componentes, commits y documentación.
-- Nombres descriptivos que reflejen el dominio, no el rol técnico.
-- Sin comentarios salvo estructurales. El código debe ser autoexplicativo.
 - No generar código salvo que se pida explícitamente.
-- Siempre referenciar documentación oficial.
+- Ante dudas, guiar con preguntas y referencias a documentación oficial.
+- Si se pide revisión, dar feedback tipo PR: qué cambiar, por qué, y enlace a docs.
+- Priorizar que el desarrollador entienda sobre que el código funcione rápido.
 
-## Frontend — Vue 3 + TypeScript + TailwindCSS
+## Stack
 
-- Composition API con `<script setup lang="ts">`.
-- Props tipados con `defineProps<T>()`, emits tipados con `defineEmits<T>()`.
-- Tipado estricto: nunca `any`, usar `readonly` donde aplique.
-- Composables (`useX()`) para lógica reutilizable.
-- Pinia con setup syntax para stores.
-- Vue Router con lazy loading de rutas.
-- TailwindCSS para estilos, layout responsive.
+- Vue 3.5+ con Composition API y `<script setup lang="ts">`
+- TypeScript estricto (sin `any`, `readonly` donde aplique)
+- TailwindCSS para estilos
+- Pinia (setup syntax) para estado global
+- Vue Router para navegación
+- Vite como bundler
 
-## Backend — C# .NET 10
+## Convenciones de código
 
-- Nulabilidad habilitada.
-- async/await con CancellationToken.
-- Validaciones explícitas en DTOs.
+### Componentes
 
-## Contrato de API
+- Nombres en PascalCase y en español: `TareaItem.vue`, `TareaFormulario.vue`.
+- Siempre `<script setup lang="ts">` — nunca Options API.
+- Props tipados con `defineProps<T>()`.
+- Emits tipados con `defineEmits<T>()`.
+- Un componente = una responsabilidad.
 
-| Método | Ruta             | Body                 | Respuesta            | Éxito | Errores  |
-|--------|------------------|----------------------|----------------------|-------|----------|
-| POST   | `/tareas`        | nombre, descripcion  | tarea creada         | 201   | 400      |
-| GET    | `/tareas`        | —                    | lista de tareas      | 200   | —        |
-| GET    | `/tareas/{id}`   | —                    | una tarea            | 200   | 404      |
-| PUT    | `/tareas/{id}`   | nombre, descripcion  | tarea actualizada    | 200   | 400, 404 |
-| PATCH  | `/tareas/{id}`   | estado               | tarea actualizada    | 200   | 400, 404 |
-| DELETE | `/tareas/{id}`   | —                    | —                    | 204   | 404      |
+### Tipos e interfaces
 
-## Estructura del frontend
+- Archivo dedicado: `src/types/tarea.ts`.
+- Nombres en español que reflejen el dominio: `Tarea`, `PayloadCreacionTarea`.
+- Nunca `any`. Usar `| null` para valores nullable, no `?` (propiedad opcional) salvo que la propiedad pueda no existir.
+- `readonly` en campos que no deben mutar (ej: `id`).
+
+### Composables
+
+- Prefijo `use`: `useFetch.ts`, `useDebounce.ts`.
+- Retornan valores reactivos (`ref`, `computed`).
+- Un composable por archivo en `src/composables/`.
+
+### Stores (Pinia)
+
+- Setup syntax con `defineStore`.
+- Prefijo `use`: `useTareaStore.ts`.
+- State con `ref`, getters con `computed`, actions como funciones.
+- El store es la fuente de verdad para los datos.
+
+### Vue Router
+
+- Lazy loading de rutas: `() => import(...)`.
+- Guards de navegación cuando sea necesario.
+- Archivo único: `src/router/index.ts`.
+
+### Estilos (TailwindCSS)
+
+- Solo utilidades de Tailwind, no CSS custom salvo excepciones justificadas.
+- Layout responsive con `flex`, `grid`, breakpoints (`sm:`, `md:`, `lg:`).
+- Clases condicionales dinámicas con bindings de Vue (`:class`).
+
+## Estructura de archivos
 
 ```
-frontend/src/
+src/
 ├── App.vue
 ├── main.ts
 ├── router/
@@ -57,23 +77,29 @@ frontend/src/
 ├── composables/
 │   └── useFetch.ts
 ├── components/
-│   ├── TareaLista.vue
+│   ├── IndicadorCarga.vue
 │   ├── TareaItem.vue
 │   ├── TareaFormulario.vue
 │   ├── TareaFiltros.vue
-│   └── IndicadorCarga.vue
+│   └── TareaLista.vue
 ├── types/
 │   └── tarea.ts
 └── views/
     └── InicioVista.vue
 ```
 
-## Git workflow
+## Patrones a seguir
 
-- Gitflow: `main` (producción), `develop` (desarrollo).
-- Prefijos: `feature/`, `release/`, `hotfix/`.
-- Commits en español.
+- Datos fluyen hacia abajo (props), eventos hacia arriba (emits).
+- Lógica de negocio en stores y composables, no en componentes.
+- Cada operación HTTP tiene estados: loading, error, data.
+- `v-for` siempre con `:key` usando identificador único, nunca index.
+- Cleanup de side-effects en `onUnmounted`.
 
-## Estado actual
+## Documentación de referencia
 
-Proyecto recién inicializado. Frontend y backend pendientes de scaffold.
+- Vue 3: https://vuejs.org/guide/introduction.html
+- Pinia: https://pinia.vuejs.org/
+- Vue Router: https://router.vuejs.org/
+- TailwindCSS: https://tailwindcss.com/docs
+- TypeScript: https://www.typescriptlang.org/docs/
