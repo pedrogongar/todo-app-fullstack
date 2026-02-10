@@ -4,7 +4,7 @@
 // ============================================================================
 import type { PayloadActualizacionTarea } from '@/types/tarea'
 import { Send } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 // ============================================================================
 // Props
@@ -17,14 +17,14 @@ const props = defineProps<{
 // Emits
 // ============================================================================
 const emit = defineEmits<{
-  (e: 'enviar', payload: PayloadActualizacionTarea): void
+  enviar: [payload: PayloadActualizacionTarea]
 }>()
 
 // ============================================================================
 // Estado local
 // ============================================================================
-const nombre = ref(props.tareaInicial?.nombre ?? '')
-const descripcion = ref(props.tareaInicial?.descripcion ?? '')
+const nombre = ref('')
+const descripcion = ref('')
 
 // ============================================================================
 // Métodos
@@ -33,6 +33,18 @@ const manejarEnvio = () => {
   if (!nombre.value.trim() || !descripcion.value.trim()) return
   emit('enviar', { nombre: nombre.value, descripcion: descripcion.value })
 }
+
+// ============================================================================
+// Watchers
+// ============================================================================
+watch(
+  () => props.tareaInicial,
+  (nuevoValor) => {
+    nombre.value = nuevoValor?.nombre ?? ''
+    descripcion.value = nuevoValor?.descripcion ?? ''
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
