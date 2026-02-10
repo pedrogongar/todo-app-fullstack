@@ -25,13 +25,25 @@ const emit = defineEmits<{
 // ============================================================================
 const nombre = ref('')
 const descripcion = ref('')
+const intentoEnvio = ref(false)
 
 // ============================================================================
 // Métodos
 // ============================================================================
 const manejarEnvio = () => {
-  if (!nombre.value.trim() || !descripcion.value.trim()) return
+  if (!nombre.value.trim() || !descripcion.value.trim()) {
+    intentoEnvio.value = true
+    return
+  }
+
   emit('enviar', { nombre: nombre.value, descripcion: descripcion.value })
+
+  if (!props.tareaInicial) resetFormulario()
+}
+
+const resetFormulario = () => {
+  nombre.value = ''
+  descripcion.value = ''
 }
 
 // ============================================================================
@@ -59,6 +71,7 @@ watch(
       <!-- Campo nombre/título -->
       <div>
         <input type="text" v-model="nombre" placeholder="Título" />
+        <p v-if="intentoEnvio && !nombre.trim()">Debes añadir un nombre</p>
       </div>
 
       <!-- Campo descripción -->
@@ -68,6 +81,7 @@ watch(
           v-model="descripcion"
           placeholder="Introduce una descripción de la tarea"
         />
+        <p v-if="intentoEnvio && !descripcion.trim()">Debes añadir una descripción</p>
       </div>
 
       <!-- Botón enviar -->
