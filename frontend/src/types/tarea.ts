@@ -1,23 +1,23 @@
 /* =============================================
-Otros tipos
+Tipos auxiliares del dominio
 ============================================= */
 export type FiltroTarea = 'todas' | 'pendiente' | 'completada'
 export type EstadoTarea = 'pendiente' | 'completada'
 
 /* =============================================
-Interface principal
+Entidad principal
 ============================================= */
 export interface Tarea {
   readonly id: number
   nombre: string
   descripcion: string
   estado: EstadoTarea
-  readonly fechaCreacion: Date
-  readonly fechaCompletado: Date | null
+  readonly fechaCreacion: string
+  readonly fechaCompletado: string | null
 }
 
 /* =============================================
-Payloads
+Payloads para operaciones con la API
 ============================================= */
 export type PayloadCreacionTarea = Pick<Tarea, 'nombre' | 'descripcion'>
 export type PayloadActualizacionTarea = Pick<Tarea, 'nombre' | 'descripcion'>
