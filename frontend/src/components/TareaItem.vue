@@ -60,14 +60,14 @@ defineEmits<{
       <!-- Fecha de creación -->
       <div class="flex">
         <span>
-          Creado: <span>{{ tarea.fechaCreacion }}</span>
+          Creado: <span>{{ tarea.fechaInicio }}</span>
         </span>
       </div>
 
       <!-- Fecha de completado (condicional) -->
-      <div v-if="tarea.fechaCompletado" class="flex">
+      <div v-if="tarea.fechaFin" class="flex">
         <span>
-          Completado: <span>{{ tarea.fechaCompletado }}</span>
+          Completado: <span>{{ tarea.fechaFin }}</span>
         </span>
       </div>
     </div>
