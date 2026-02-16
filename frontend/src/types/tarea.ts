@@ -3,7 +3,6 @@ Tipos auxiliares del dominio
 ============================================= */
 export type FiltroTarea = 'todas' | 'pendiente' | 'completada'
 export type EstadoTarea = 'pendiente' | 'completada'
-
 /* =============================================
 Entidad principal
 ============================================= */
@@ -12,8 +11,8 @@ export interface Tarea {
   nombre: string
   descripcion: string
   estado: EstadoTarea
-  readonly fechaCreacion: string
-  readonly fechaCompletado: string | null
+  readonly fechaInicio: string
+  readonly fechaFin: string | null
 }
 
 /* =============================================
