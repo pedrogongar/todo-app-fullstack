@@ -61,20 +61,15 @@ watch(
 
 <template>
   <!-- ========================================================================
-  Contenedor principal del formulario
+  Formulario
   ========================================================================= -->
   <div>
-    <!-- ======================================================================
-    Formulario de tarea
-    ======================================================================= -->
     <form @submit.prevent="manejarEnvio">
-      <!-- Campo nombre/título -->
       <div>
         <input type="text" v-model="nombre" placeholder="Título" />
         <p v-if="intentoEnvio && !nombre.trim()">Debes añadir un nombre</p>
       </div>
 
-      <!-- Campo descripción -->
       <div>
         <input
           type="text"
@@ -84,7 +79,6 @@ watch(
         <p v-if="intentoEnvio && !descripcion.trim()">Debes añadir una descripción</p>
       </div>
 
-      <!-- Botón enviar -->
       <div>
         <button type="submit">
           <Send class="h-5 w-5" />

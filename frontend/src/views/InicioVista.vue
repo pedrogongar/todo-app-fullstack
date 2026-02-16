@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// ============================================================================
+// Imports
+// ============================================================================
 import TareaFiltros from '@/components/TareaFiltros.vue'
 import TareaFormulario from '@/components/TareaFormulario.vue'
 import TareaLista from '@/components/TareaLista.vue'
@@ -7,6 +10,9 @@ import type { PayloadActualizacionTarea, Tarea } from '@/types/tarea'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 
+// ============================================================================
+// Store
+// ============================================================================
 const store = useTareaStore()
 const { listaFiltrada, filtro, cargando, error, totalTareas, tareasPendientes, tareasCompletadas } =
   storeToRefs(store)
@@ -19,8 +25,14 @@ const {
   cambiarFiltro,
 } = store
 
+// ============================================================================
+// Estado local
+// ============================================================================
 const tareaEditando = ref<Tarea | undefined>(undefined)
 
+// ============================================================================
+// Métodos
+// ============================================================================
 const manejarEditar = (id: number) => {
   tareaEditando.value = store.lista.find((t) => t.id === id) ?? undefined
 }
@@ -41,14 +53,23 @@ const manejarAlternar = (id: number) => {
   actualizarEstadoTarea(id, nuevoEstado)
 }
 
+// ============================================================================
+// Ciclo de vida
+// ============================================================================
 onMounted(() => {
   cargarTareas()
 })
 </script>
 
 <template>
+  <!-- ========================================================================
+  Formulario
+  ========================================================================= -->
   <TareaFormulario :tarea-inicial="tareaEditando" @enviar="manejarEnvio" />
 
+  <!-- ========================================================================
+  Filtros
+  ========================================================================= -->
   <TareaFiltros
     :filtro-activo="filtro"
     :total="totalTareas"
@@ -57,6 +78,9 @@ onMounted(() => {
     @nuevo-filtro="cambiarFiltro"
   />
 
+  <!-- ========================================================================
+  Lista
+  ========================================================================= -->
   <TareaLista
     :tareas="listaFiltrada"
     :cargando="cargando"

@@ -2,68 +2,41 @@ import type { EstadoTarea, FiltroTarea, PayloadActualizacionEstadoTarea, Payload
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-/**
- * Store principal para la gestión de tareas
- *
- * Responsabilidades:
- * - Mantener el estado de la lista de tareas
- * - Proveer operaciones CRUD contra la API REST
- * - Gestionar filtros y estados de carga/error
- * - Exponer getters computados para estadísticas
- */
 export const useTareaStore = defineStore('tarea', () => {
   /* =============================================
      CONFIGURACIÓN
      ============================================= */
 
-  /** URL base de la API backend */
   const URL_BASE = 'http://localhost:5000/api'
 
   /* =============================================
      ESTADO REACTIVO
      ============================================= */
 
-  /** Lista completa de tareas cargadas desde el servidor */
   const lista = ref<Tarea[]>([])
-
-  /** Tarea individual cargada (para vista de detalle) */
   const tarea = ref<Tarea | null>(null)
-
-  /** Filtro activo para mostrar tareas según su estado */
   const filtro = ref<FiltroTarea>('todas')
-
-  /** Mensaje de error de la última operación fallida */
   const error = ref<string | null>(null)
-
-  /** Indica si hay una operación HTTP en curso */
   const cargando = ref(false)
 
   /* =============================================
      GETTERS COMPUTADOS
      ============================================= */
 
-  /**
-   * Lista de tareas filtrada según el filtro activo
-   * - Si filtro = 'todas': retorna lista completa
-   * - Si filtro = 'pendiente' | 'completada': filtra por estado
-   */
   const listaFiltrada = computed(() => {
     return filtro.value === 'todas'
       ? lista.value
       : lista.value.filter((tarea) => tarea.estado === filtro.value)
   })
 
-  /** Cantidad de tareas con estado 'pendiente' */
   const tareasPendientes = computed(() => {
     return lista.value.filter((tarea) => tarea.estado === 'pendiente').length
   })
 
-  /** Cantidad de tareas con estado 'completada' */
   const tareasCompletadas = computed(() => {
     return lista.value.filter((tarea) => tarea.estado === 'completada').length
   })
 
-  /** Cantidad total de tareas (sin filtrar) */
   const totalTareas = computed(() => {
     return lista.value.length
   })
@@ -72,10 +45,6 @@ export const useTareaStore = defineStore('tarea', () => {
      ACCIONES - LECTURA (GET)
      ============================================= */
 
-  /**
-   * Carga todas las tareas desde el servidor
-   * @throws Error si la petición HTTP falla
-   */
   async function cargarTareas() {
     cargando.value = true
     error.value = null
@@ -96,11 +65,6 @@ export const useTareaStore = defineStore('tarea', () => {
     }
   }
 
-  /**
-   * Carga una tarea específica por su ID
-   * @param id - Identificador único de la tarea
-   * @throws Error si la petición HTTP falla o la tarea no existe
-   */
   async function cargarTarea(id: number) {
     cargando.value = true
     error.value = null
@@ -125,12 +89,6 @@ export const useTareaStore = defineStore('tarea', () => {
      ACCIONES - CREACIÓN (POST)
      ============================================= */
 
-  /**
-   * Crea una nueva tarea en el servidor
-   * @param payload - Datos de la tarea a crear (nombre, descripción)
-   * @returns La tarea creada con su ID asignado
-   * @throws Error si la petición HTTP falla o la validación falla
-   */
   async function crearTarea(payload: PayloadCreacionTarea): Promise<Tarea> {
     cargando.value = true
     error.value = null
@@ -149,8 +107,6 @@ export const useTareaStore = defineStore('tarea', () => {
       }
 
       const nuevaTarea: Tarea = await respuesta.json()
-
-      // Actualizar la lista local con la nueva tarea
       lista.value.push(nuevaTarea)
 
       return nuevaTarea
@@ -166,13 +122,6 @@ export const useTareaStore = defineStore('tarea', () => {
      ACCIONES - ACTUALIZACIÓN (PUT/PATCH)
      ============================================= */
 
-  /**
-   * Actualiza los datos de una tarea existente
-   * @param id - Identificador de la tarea a actualizar
-   * @param payload - Nuevos datos (nombre, descripción)
-   * @returns La tarea actualizada
-   * @throws Error si la petición HTTP falla o la tarea no existe
-   */
   async function actualizarTarea(
     id: number,
     payload: PayloadActualizacionTarea
@@ -195,7 +144,6 @@ export const useTareaStore = defineStore('tarea', () => {
 
       const tareaActualizada: Tarea = await respuesta.json()
 
-      // Actualizar la tarea en la lista local
       const index = lista.value.findIndex((t) => t.id === id)
       if (index !== -1) {
         lista.value[index] = tareaActualizada
@@ -210,13 +158,6 @@ export const useTareaStore = defineStore('tarea', () => {
     }
   }
 
-  /**
-   * Actualiza únicamente el estado de una tarea (pendiente/completada)
-   * @param id - Identificador de la tarea
-   * @param nuevoEstado - Nuevo estado ('pendiente' | 'completada')
-   * @returns La tarea con su estado actualizado
-   * @throws Error si la petición HTTP falla o la tarea no existe
-   */
   async function actualizarEstadoTarea(
     id: number,
     nuevoEstado: EstadoTarea
@@ -241,7 +182,6 @@ export const useTareaStore = defineStore('tarea', () => {
 
       const tareaActualizada: Tarea = await respuesta.json()
 
-      // Actualizar la tarea en la lista local
       const index = lista.value.findIndex((t) => t.id === id)
       if (index !== -1) {
         lista.value[index] = tareaActualizada
@@ -260,11 +200,6 @@ export const useTareaStore = defineStore('tarea', () => {
      ACCIONES - ELIMINACIÓN (DELETE)
      ============================================= */
 
-  /**
-   * Elimina una tarea del servidor
-   * @param id - Identificador de la tarea a eliminar
-   * @throws Error si la petición HTTP falla o la tarea no existe
-   */
   async function eliminarTarea(id: number): Promise<void> {
     cargando.value = true
     error.value = null
@@ -278,7 +213,6 @@ export const useTareaStore = defineStore('tarea', () => {
         throw new Error(`${respuesta.status}: ${respuesta.statusText}`)
       }
 
-      // Eliminar la tarea de la lista local
       const index = lista.value.findIndex((t) => t.id === id)
       if (index !== -1) {
         lista.value.splice(index, 1)
@@ -295,17 +229,10 @@ export const useTareaStore = defineStore('tarea', () => {
      ACCIONES - FILTROS
      ============================================= */
 
-  /**
-   * Cambia el filtro activo para la lista de tareas
-   * @param nuevoFiltro - Filtro a aplicar ('todas' | 'pendiente' | 'completada')
-   */
   function cambiarFiltro(nuevoFiltro: FiltroTarea) {
     filtro.value = nuevoFiltro
   }
 
-  /**
-   * Resetea el filtro a 'todas'
-   */
   function limpiarFiltro() {
     filtro.value = 'todas'
   }
@@ -314,16 +241,10 @@ export const useTareaStore = defineStore('tarea', () => {
      ACCIONES - UTILIDADES
      ============================================= */
 
-  /**
-   * Limpia el mensaje de error actual
-   */
   function limpiarError() {
     error.value = null
   }
 
-  /**
-   * Limpia la tarea individual cargada
-   */
   function limpiarTarea() {
     tarea.value = null
   }
